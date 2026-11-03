@@ -2,6 +2,12 @@
 
 NeoPDF is a Windows x64 PDF reader, editor, and smart print-pricing calculator.
 
+## Download
+
+**[Download NeoPDF from Releases](https://github.com/Baihq297/NeoPDF/releases)**
+
+Release downloads will appear on the Releases page when a tested build is published.
+
 ## Supported build profiles
 
 - **Legacy x64:** Windows 7 SP1 target (Python 3.8 x64 profile; requires real Windows 7 testing).
