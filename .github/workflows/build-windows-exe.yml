@@ -1,0 +1,50 @@
+name: Build NeoPDF Windows x64 EXE
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-2019
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - profile: legacy
+            python: "3.8"
+            requirements: requirements-legacy.txt
+            exe: NeoPDF-Legacy-x64.exe
+          - profile: modern
+            python: "3.11"
+            requirements: requirements-modern.txt
+            exe: NeoPDF-x64.exe
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          architecture: x64
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r ${{ matrix.requirements }}
+      - name: Build standalone EXE
+        run: python build_exe.py ${{ matrix.profile }}
+      - name: Verify output
+        shell: pwsh
+        run: |
+          $path = "dist/${{ matrix.profile }}/${{ matrix.exe }}"
+          if (!(Test-Path $path)) { throw "EXE not found: $path" }
+          Get-Item $path | Format-List Name,Length
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NeoPDF-${{ matrix.profile }}-x64
+          path: dist/${{ matrix.profile }}/${{ matrix.exe }}
+          if-no-files-found: error
+          retention-days: 30
