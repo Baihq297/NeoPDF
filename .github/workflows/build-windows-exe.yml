@@ -3,6 +3,8 @@ name: Build NeoPDF Windows x64 EXE
 on:
   workflow_dispatch:
   push:
+    branches:
+      - main
     tags:
       - "v*"
 
@@ -26,10 +28,10 @@ jobs:
             exe: NeoPDF-x64.exe
     steps:
       - uses: actions/checkout@v4
-      - name: Extract NeoPDF source package when present
+      - name: Extract NeoPDF source package
         shell: pwsh
         run: |
-          $archive = "NeoPDF_6.2_EXE_Build_Package.zip"
+          $archive = "NeoPDF_Source_Upload.zip"
           if (Test-Path $archive) {
             Expand-Archive -Path $archive -DestinationPath "$env:RUNNER_TEMP/neopdf-source" -Force
             $source = "$env:RUNNER_TEMP/neopdf-source/NeoPDF"
@@ -40,7 +42,7 @@ jobs:
             }
           }
           if (!(Test-Path "build_exe.py") -or !(Test-Path "main.py")) {
-            throw "NeoPDF source files are missing. Upload NeoPDF_6.2_EXE_Build_Package.zip to the repository root first."
+            throw "NeoPDF source files are missing. Ensure NeoPDF_Source_Upload.zip is present in the repository root."
           }
       - uses: actions/setup-python@v5
         with:
